@@ -4,6 +4,8 @@
 #+OPTIONS: toc:nil
 #+AUTHOR:
 
+[[./index.html][回到首页]]
+
 * 安装cider
 
 在文件 ~/.emacs 中加入如下两行，加入melpa软件库
@@ -47,3 +49,5 @@ M-x cider-jack-in
 #+END_SRC
 
 等待clojure提示符出现后，启动成功
+
+[[./index.html][回到首页]]
