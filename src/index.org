@@ -1,0 +1,9 @@
+
+#+TITLE: Iacob的网志
+#+STARTUP: showeverything
+#+OPTIONS: toc:nil
+#+AUTHOR:
+
+1. [[./clojure.html][在Linux上为emacs安装clojure开发环境]]
+
+
