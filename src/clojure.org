@@ -1,0 +1,49 @@
+
+#+TITLE: 在Linux上为emacs安装clojure开发环境
+#+STARTUP: showeverything
+#+OPTIONS: toc:nil
+#+AUTHOR:
+
+* 安装cider
+
+在文件 ~/.emacs 中加入如下两行，加入melpa软件库
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
+(package-initialize)
+#+END_SRC
+
+然后打开emacs，安装软件
+
+#+BEGIN_SRC emacs-lisp
+M-x package-install
+Install package: cider
+#+END_SRC
+
+* 安装lein
+
+如系统自带lein和clojure，最好将其删除后重新安装，因为系统自带的版本很有可能不是最新版本，一些cider需要的参数在旧版本中并未实现
+
+按照lein官网(https://leiningen.org)上的步骤安装lein:
+
+1. 下载 [[https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein][lein script]] (或windows版 [[https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein.bat][lein.bat]])
+1. 将其放置到$PATH目录中以便shell可以找到（例如 ~/bin)
+1. 将其设置为"可执行"(chmod a+x ~/bin/lein)
+1. 执行脚本(lein)它便会下载自安装包
+
+安装成功以后执行如下命令，待clojure的提示符("user=>")出现
+
+#+BEGIN_SRC emacs-lisp
+lein repl
+#+END_SRC
+
+* 启动cider
+
+打开emacs，运行命令
+
+#+BEGIN_SRC emacs-lisp
+M-x cider-jack-in
+#+END_SRC
+
+等待clojure提示符出现后，启动成功
