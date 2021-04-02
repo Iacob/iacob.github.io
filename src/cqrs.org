@@ -32,19 +32,5 @@
 
 CQRS是一种利用有限的资源和预算实现高负载系统的方式，且不会和组建集群一样需要大量的商业软件，定制的余地较大。
 
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-
-(package-initialize)
-#+END_SRC
-
-然后打开emacs，安装软件
-
-#+BEGIN_SRC emacs-lisp
-M-x package-install
-Install package: cider
-#+END_SRC
-
-
 
 [[./index.html][回到首页]]
