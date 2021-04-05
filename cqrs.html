@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-04-03 六 00:17 -->
+<!-- 2021-04-05 一 15:05 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CQRS的实现</title>
@@ -246,8 +246,8 @@ for the JavaScript code in this tag.
 <a href="./index.html">回到首页</a>
 </p>
 
-<div id="outline-container-org00bfc22" class="outline-2">
-<h2 id="org00bfc22"><span class="section-number-2">1</span> 起因</h2>
+<div id="outline-container-org524c310" class="outline-2">
+<h2 id="org524c310"><span class="section-number-2">1</span> 起因</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 许多情况下，在某个系统中读操作的次数是远大于写操作的，例如电商网站，对商品信息的读取次数远大于在网站上建立订单的次数，这时通常会将读操作与写操作分开处理，这么做的目的是
@@ -259,17 +259,34 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org50c834d" class="outline-2">
-<h2 id="org50c834d"><span class="section-number-2">2</span> 结构</h2>
+<div id="outline-container-org25a20a5" class="outline-2">
+<h2 id="org25a20a5"><span class="section-number-2">2</span> 结构</h2>
 <div class="outline-text-2" id="text-2">
+<pre class="example">
+
+	    |------------|
+	    | Server     |
+	    |------------|
+	    /     |      \
+	   /      \/      \
+|---------|  |---------| |---------|
+|  Agent  |  |  Agent  | |  Agent  |
+|---------|  |---------| |---------|
+      |           |          |
+    /----\     /----\      /----\
+   |  DB  |   |  DB  |    |  DB  |
+    \----/     \----/      \----/
+
+</pre>
+
 <p>
 通常分为主控端(master)和多个代理节点(agency)，主控端和每个代理节点都有自己的存储空间(数据库)
 </p>
 </div>
 </div>
 
-<div id="outline-container-org390d7f8" class="outline-2">
-<h2 id="org390d7f8"><span class="section-number-2">3</span> 各部分职责</h2>
+<div id="outline-container-orga1942cb" class="outline-2">
+<h2 id="orga1942cb"><span class="section-number-2">3</span> 各部分职责</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 主控端: 消息分发，执行重要的写操作
@@ -281,8 +298,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org4d55302" class="outline-2">
-<h2 id="org4d55302"><span class="section-number-2">4</span> 数据同步方式</h2>
+<div id="outline-container-orgd9570f0" class="outline-2">
+<h2 id="orgd9570f0"><span class="section-number-2">4</span> 数据同步方式</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 数据在主控端和各个节点之间通常通过“声明与确认”的方式传输，主控端将数据库变更广播出去，各个节点自行从主控端获取数据并保存
@@ -294,30 +311,12 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-orgd6f8f8a" class="outline-2">
-<h2 id="orgd6f8f8a"><span class="section-number-2">5</span> 结论</h2>
+<div id="outline-container-org14aa404" class="outline-2">
+<h2 id="org14aa404"><span class="section-number-2">5</span> 结论</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 CQRS是一种利用有限的资源和预算实现高负载系统的方式，且不会和组建集群一样需要大量的商业软件，定制的余地较大。
 </p>
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-
-(package-initialize)
-</pre>
-</div>
-
-<p>
-然后打开emacs，安装软件
-</p>
-
-<div class="org-src-container">
-<pre class="src src-emacs-lisp">M-x package-install
-Install package: cider
-</pre>
-</div>
-
 
 
 <p>
@@ -325,6 +324,10 @@ Install package: cider
 </p>
 </div>
 </div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2021-04-05 一 15:05</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
 </html>
