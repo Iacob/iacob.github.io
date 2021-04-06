@@ -6,11 +6,13 @@
     <item>
       <title>在Linux上为emacs安装clojure开发环境</title>
       <link>https://iacob.github.io/clojure.html</link>
+      <pubDate>2021-03-25</pubDate>
       <description></description>
     </item>
     <item>
       <title>CQRS的实现</title>
       <link>https://iacob.github.io/cqrs.html</link>
+      <pubDate>2021-04-05</pubDate>
       <description></description>
     </item>
   </channel>
