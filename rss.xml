@@ -1,0 +1,17 @@
+<rss version="2.0">
+  <channel>
+    <title>Iacob的网志</title>
+    <description>Iacob的网志</description>
+    <link>https://iacob.github.io</link>
+    <item>
+      <title>在Linux上为emacs安装clojure开发环境</title>
+      <link>https://iacob.github.io/clojure.html</link>
+      <description></description>
+    </item>
+    <item>
+      <title>CQRS的实现</title>
+      <link>https://iacob.github.io/cqrs.html</link>
+      <description></description>
+    </item>
+  </channel>
+</rss>
