@@ -7,4 +7,4 @@
  - [[./clojure.html][在Linux上为emacs安装clojure开发环境]]
  - [[./cqrs.html][CQRS的实现]]
 
-[[https://github.com/Iacob][Github]]
+[[https://github.com/Iacob][Github]] [[https://iacob.github.io/rss.xml][RSS]]
