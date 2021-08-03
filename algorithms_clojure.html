@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-07-24 Sat 07:14 -->
+<!-- 2021-08-03 Tue 23:49 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>使用Clojure实现的一些算法</title>
@@ -246,8 +246,8 @@ for the JavaScript code in this tag.
 <a href="./index.html">回到首页</a>
 </p>
 
-<div id="outline-container-org0623cb2" class="outline-2">
-<h2 id="org0623cb2"><span class="section-number-2">1</span> 排序 Selection Sort</h2>
+<div id="outline-container-org3f140b8" class="outline-2">
+<h2 id="org3f140b8"><span class="section-number-2">1</span> 排序 Selection Sort</h2>
 <div class="outline-text-2" id="text-1">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn selection-sort [list1]
@@ -271,8 +271,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org1cfd95c" class="outline-2">
-<h2 id="org1cfd95c"><span class="section-number-2">2</span> 二分查找 Binary Search</h2>
+<div id="outline-container-org5ded248" class="outline-2">
+<h2 id="org5ded248"><span class="section-number-2">2</span> 二分查找 Binary Search</h2>
 <div class="outline-text-2" id="text-2">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn binary-search [coll item]
@@ -292,6 +292,102 @@ for the JavaScript code in this tag.
   )
 </pre>
 </div>
+</div>
+</div>
+
+
+<div id="outline-container-orge771971" class="outline-2">
+<h2 id="orge771971"><span class="section-number-2">3</span> 红黑树相关 Red-Black Tree</h2>
+<div class="outline-text-2" id="text-3">
+<div class="org-src-container">
+<pre class="src src-clojure">(def RED true)
+(def BLACK false)
+(defrecord RBNode [key val nodeNumAm colorAm leftAm rightAm])
+
+
+(defn rbtree-node-size [node]
+  "Calculate tree size/tree weight."
+  (let [cntAm (atom 0)]
+    (defn -count-node-size [n]
+      (when-not (or (nil? (:leftAm n)) (nil? @(:leftAm n)))
+	(reset! cntAm (inc @cntAm))
+	(-count-node-size @(:leftAm n)) )
+      (when-not (or (nil? (:rightAm n)) (nil? @(:rightAm n)))
+	(reset! cntAm (inc @cntAm))
+	(-count-node-size @(:rightAm n)) ) )
+    (-count-node-size node)
+    (when-not (nil? node) (reset! cntAm (inc @cntAm)))
+    (deref cntAm) ) )
+
+(defn rbtree-rotate-right [node]
+  "Rotate right."
+  (let [x @(:leftAm node)]
+    (reset! (:leftAm node) @(:right x))
+    (reset! (:rightAm x) node)
+    (reset! (:colorAm x) @(:colorAm node))
+    (reset! (:colorAm node) RED)
+    (reset! (:nodeNumAm x) @(:nodeNumAm node))
+    (reset! (:nodeNumAm h) (+ 1 (rbtree-node-size @(:leftAm node))
+			      (rbtree-node-size @(:rightAm node))))
+    x ) )
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgbb8a693" class="outline-2">
+<h2 id="orgbb8a693"><span class="section-number-2">4</span> 最短路径 Shortest Path</h2>
+<div class="outline-text-2" id="text-4">
+<div class="org-src-container">
+<pre class="src src-clojure">(defrecord ShortPath [from to lenAm prevAm])
+
+(defn shortest-path [paths]
+
+  (let [PathList (transient [])]
+
+    (defn -merge-path [shortPath]
+      (let [ifMatchedAm (atom false)]
+	(doseq [pathItemIdx (range 0 (count PathList))]
+	  (let [pathItem (get PathList pathItemIdx)]
+
+	    (when (and (= (:from pathItem) (:from shortPath))
+		       (= (:to pathItem) (:to shortPath)))
+
+	      (reset! ifMatchedAm true)
+
+	      (let [pathLen @(:lenAm pathItem) newLen @(:lenAm shortPath)]
+		(when (or (nil? pathLen) (&gt; pathLen newLen))
+		  (reset! (:lenAm pathItem) newLen)
+		  (reset! (:prevAm pathItem) @(:prevAm shortPath)) ) ) ) ) )
+	(when-not @ifMatchedAm
+	  (conj! PathList shortPath) ) ) )
+
+
+    (doseq [path paths]
+
+      (let [newPath (-&gt;ShortPath (nth path 0)
+				 (nth path 1)
+				 (atom (nth path 2))
+				 (atom nil))]
+	(conj! PathList newPath)
+
+	(let [mergeList (transient [])]
+	  (doseq [pathItemIdx (range 0 (count PathList))]
+	    (let [pathItem (get PathList pathItemIdx)]
+	      (when (= (:to pathItem) (nth path 0))
+		(conj! mergeList (-&gt;ShortPath (:from pathItem)
+					      (nth path 1)
+					      (atom (+ @(:lenAm pathItem)
+						       (nth path 2)))
+					      (atom (:to pathItem)))) ) ) )
+	  (doseq [mergeItem (persistent! mergeList)]
+	    (-merge-path mergeItem) ) ) ) )
+
+    (persistent! PathList) ) )
+</pre>
+</div>
+
+
 
 <p>
 <a href="./index.html">回到首页</a>

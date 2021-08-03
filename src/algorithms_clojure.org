@@ -47,4 +47,92 @@
   )
 #+END_SRC
 
+
+* 红黑树相关 Red-Black Tree
+
+#+BEGIN_SRC clojure
+(def RED true)
+(def BLACK false)
+(defrecord RBNode [key val nodeNumAm colorAm leftAm rightAm])
+
+
+(defn rbtree-node-size [node]
+  "Calculate tree size/tree weight."
+  (let [cntAm (atom 0)]
+    (defn -count-node-size [n]
+      (when-not (or (nil? (:leftAm n)) (nil? @(:leftAm n)))
+        (reset! cntAm (inc @cntAm))
+        (-count-node-size @(:leftAm n)) )
+      (when-not (or (nil? (:rightAm n)) (nil? @(:rightAm n)))
+        (reset! cntAm (inc @cntAm))
+        (-count-node-size @(:rightAm n)) ) )
+    (-count-node-size node)
+    (when-not (nil? node) (reset! cntAm (inc @cntAm)))
+    (deref cntAm) ) )
+
+(defn rbtree-rotate-right [node]
+  "Rotate right."
+  (let [x @(:leftAm node)]
+    (reset! (:leftAm node) @(:right x))
+    (reset! (:rightAm x) node)
+    (reset! (:colorAm x) @(:colorAm node))
+    (reset! (:colorAm node) RED)
+    (reset! (:nodeNumAm x) @(:nodeNumAm node))
+    (reset! (:nodeNumAm h) (+ 1 (rbtree-node-size @(:leftAm node))
+                              (rbtree-node-size @(:rightAm node))))
+    x ) )
+#+END_SRC
+
+* 最短路径 Shortest Path
+
+#+BEGIN_SRC clojure
+(defrecord ShortPath [from to lenAm prevAm])
+
+(defn shortest-path [paths]
+
+  (let [PathList (transient [])]
+  
+    (defn -merge-path [shortPath]
+      (let [ifMatchedAm (atom false)]
+        (doseq [pathItemIdx (range 0 (count PathList))]
+          (let [pathItem (get PathList pathItemIdx)]
+            
+            (when (and (= (:from pathItem) (:from shortPath))
+                       (= (:to pathItem) (:to shortPath)))
+              
+              (reset! ifMatchedAm true)
+              
+              (let [pathLen @(:lenAm pathItem) newLen @(:lenAm shortPath)]
+                (when (or (nil? pathLen) (> pathLen newLen))
+                  (reset! (:lenAm pathItem) newLen)
+                  (reset! (:prevAm pathItem) @(:prevAm shortPath)) ) ) ) ) )
+        (when-not @ifMatchedAm
+          (conj! PathList shortPath) ) ) )
+    
+    
+    (doseq [path paths]
+      
+      (let [newPath (->ShortPath (nth path 0)
+                                 (nth path 1)
+                                 (atom (nth path 2))
+                                 (atom nil))]
+        (conj! PathList newPath)
+        
+        (let [mergeList (transient [])]
+          (doseq [pathItemIdx (range 0 (count PathList))]
+            (let [pathItem (get PathList pathItemIdx)]
+              (when (= (:to pathItem) (nth path 0))
+                (conj! mergeList (->ShortPath (:from pathItem)
+                                              (nth path 1)
+                                              (atom (+ @(:lenAm pathItem)
+                                                       (nth path 2)))
+                                              (atom (:to pathItem)))) ) ) )
+          (doseq [mergeItem (persistent! mergeList)]
+            (-merge-path mergeItem) ) ) ) )
+
+    (persistent! PathList) ) )
+#+END_SRC
+
+
+
 [[./index.html][回到首页]]
