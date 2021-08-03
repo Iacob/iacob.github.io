@@ -86,6 +86,17 @@
 * 最短路径 Shortest Path
 
 #+BEGIN_SRC clojure
+
+;; 测试参数
+;;(def paths [[:A :B 1] [:A :F 1]
+;;              [:B :C 2] [:B :F 2]
+;;              [:C :D 3] [:C :F 1]
+;;              [:D :E 4]
+;;              [:F :G 10]
+;;              [:E :Z 5]
+;;              [:G :Z 11]])
+
+
 (defrecord ShortPath [from to lenAm prevAm])
 
 (defn shortest-path [paths]
