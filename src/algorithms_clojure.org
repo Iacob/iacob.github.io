@@ -145,5 +145,50 @@
 #+END_SRC
 
 
+* 三重排序 Three-way string quicksort
+
+#+BEGIN_SRC clojure
+(defn threeway-sort [strCol]
+  (defn -sort1 [strArr lo hi charIdx]
+    (when (< lo hi)
+      (let [ltAm (atom lo) gtAm (atom hi)
+            vAm (atom (get (get strArr lo) charIdx)) iAm (atom (inc lo))]
+        ;;
+        (while (<= @iAm @gtAm)
+          (let [t (get (get strArr @iAm) charIdx)]
+            (if (< (int t) (int @vAm))
+              (do
+                (let [tmp (get strArr @ltAm)]
+                  (assoc! strArr @ltAm (get strArr @iAm))
+                  (assoc! strArr @iAm tmp))
+                (swap! ltAm inc)
+                (swap! iAm inc) )
+              
+              (if (> (int t) (int @vAm))
+                (do
+                  (let [tmp (get strArr @iAm)]
+                    (assoc! strArr @iAm (get strArr @gtAm))
+                    (assoc! strArr @gtAm tmp))
+                  (swap! gtAm dec) )
+                (swap! iAm inc) )
+              )
+            )
+          )
+        
+        (-sort1 strArr lo (dec @ltAm) charIdx)
+        (when (> (int @vAm) 0) (-sort1 strArr @ltAm @gtAm (inc charIdx)))
+        (-sort1 strArr (inc @gtAm) hi charIdx) ) ) )
+  
+  (let [strArr (transient strCol)]
+    (-sort1 strArr 0 (dec (count strCol)) 0)
+    (persistent! strArr) ) )
+
+
+(->
+  (threeway-sort ["abcde" "zab" "back"])
+  (println))
+#+END_SRC
+
+
 
 [[./index.html][回到首页]]

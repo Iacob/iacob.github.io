@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-08-03 Tue 23:58 -->
+<!-- 2021-08-07 Sat 00:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>使用Clojure实现的一些算法</title>
@@ -246,8 +246,8 @@ for the JavaScript code in this tag.
 <a href="./index.html">回到首页</a>
 </p>
 
-<div id="outline-container-org7aa35ab" class="outline-2">
-<h2 id="org7aa35ab"><span class="section-number-2">1</span> 排序 Selection Sort</h2>
+<div id="outline-container-org6884555" class="outline-2">
+<h2 id="org6884555"><span class="section-number-2">1</span> 排序 Selection Sort</h2>
 <div class="outline-text-2" id="text-1">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn selection-sort [list1]
@@ -271,8 +271,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org2fa2a03" class="outline-2">
-<h2 id="org2fa2a03"><span class="section-number-2">2</span> 二分查找 Binary Search</h2>
+<div id="outline-container-org11f43cc" class="outline-2">
+<h2 id="org11f43cc"><span class="section-number-2">2</span> 二分查找 Binary Search</h2>
 <div class="outline-text-2" id="text-2">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn binary-search [coll item]
@@ -296,8 +296,8 @@ for the JavaScript code in this tag.
 </div>
 
 
-<div id="outline-container-orgec75a0f" class="outline-2">
-<h2 id="orgec75a0f"><span class="section-number-2">3</span> 红黑树相关 Red-Black Tree</h2>
+<div id="outline-container-org1b6a5cb" class="outline-2">
+<h2 id="org1b6a5cb"><span class="section-number-2">3</span> 红黑树相关 Red-Black Tree</h2>
 <div class="outline-text-2" id="text-3">
 <div class="org-src-container">
 <pre class="src src-clojure">(def RED true)
@@ -335,8 +335,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org044308d" class="outline-2">
-<h2 id="org044308d"><span class="section-number-2">4</span> 最短路径 Shortest Path</h2>
+<div id="outline-container-orgf012922" class="outline-2">
+<h2 id="orgf012922"><span class="section-number-2">4</span> 最短路径 Shortest Path</h2>
 <div class="outline-text-2" id="text-4">
 <div class="org-src-container">
 <pre class="src src-clojure">
@@ -395,6 +395,55 @@ for the JavaScript code in this tag.
 	    (-merge-path mergeItem) ) ) ) )
 
     (persistent! PathList) ) )
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orga9c312e" class="outline-2">
+<h2 id="orga9c312e"><span class="section-number-2">5</span> 三重排序 Three-way string quicksort</h2>
+<div class="outline-text-2" id="text-5">
+<div class="org-src-container">
+<pre class="src src-clojure">(defn threeway-sort [strCol]
+  (defn -sort1 [strArr lo hi charIdx]
+    (when (&lt; lo hi)
+      (let [ltAm (atom lo) gtAm (atom hi)
+	    vAm (atom (get (get strArr lo) charIdx)) iAm (atom (inc lo))]
+	;;
+	(while (&lt;= @iAm @gtAm)
+	  (let [t (get (get strArr @iAm) charIdx)]
+	    (if (&lt; (int t) (int @vAm))
+	      (do
+		(let [tmp (get strArr @ltAm)]
+		  (assoc! strArr @ltAm (get strArr @iAm))
+		  (assoc! strArr @iAm tmp))
+		(swap! ltAm inc)
+		(swap! iAm inc) )
+
+	      (if (&gt; (int t) (int @vAm))
+		(do
+		  (let [tmp (get strArr @iAm)]
+		    (assoc! strArr @iAm (get strArr @gtAm))
+		    (assoc! strArr @gtAm tmp))
+		  (swap! gtAm dec) )
+		(swap! iAm inc) )
+	      )
+	    )
+	  )
+
+	(-sort1 strArr lo (dec @ltAm) charIdx)
+	(when (&gt; (int @vAm) 0) (-sort1 strArr @ltAm @gtAm (inc charIdx)))
+	(-sort1 strArr (inc @gtAm) hi charIdx) ) ) )
+
+  (let [strArr (transient strCol)]
+    (-sort1 strArr 0 (dec (count strCol)) 0)
+    (persistent! strArr) ) )
+
+
+(-&gt;
+  (threeway-sort ["abcde" "zab" "back"])
+  (println))
 </pre>
 </div>
 
