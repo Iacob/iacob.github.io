@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-08-07 Sat 00:15 -->
+<!-- 2021-08-13 Fri 20:30 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>使用Clojure实现的一些算法</title>
@@ -246,8 +246,8 @@ for the JavaScript code in this tag.
 <a href="./index.html">回到首页</a>
 </p>
 
-<div id="outline-container-org6884555" class="outline-2">
-<h2 id="org6884555"><span class="section-number-2">1</span> 排序 Selection Sort</h2>
+<div id="outline-container-orge687fc1" class="outline-2">
+<h2 id="orge687fc1"><span class="section-number-2">1</span> 排序 Selection Sort</h2>
 <div class="outline-text-2" id="text-1">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn selection-sort [list1]
@@ -271,8 +271,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org11f43cc" class="outline-2">
-<h2 id="org11f43cc"><span class="section-number-2">2</span> 二分查找 Binary Search</h2>
+<div id="outline-container-org61153e7" class="outline-2">
+<h2 id="org61153e7"><span class="section-number-2">2</span> 二分查找 Binary Search</h2>
 <div class="outline-text-2" id="text-2">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn binary-search [coll item]
@@ -296,8 +296,8 @@ for the JavaScript code in this tag.
 </div>
 
 
-<div id="outline-container-org1b6a5cb" class="outline-2">
-<h2 id="org1b6a5cb"><span class="section-number-2">3</span> 红黑树相关 Red-Black Tree</h2>
+<div id="outline-container-org61634d8" class="outline-2">
+<h2 id="org61634d8"><span class="section-number-2">3</span> 红黑树相关 Red-Black Tree</h2>
 <div class="outline-text-2" id="text-3">
 <div class="org-src-container">
 <pre class="src src-clojure">(def RED true)
@@ -335,8 +335,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-orgf012922" class="outline-2">
-<h2 id="orgf012922"><span class="section-number-2">4</span> 最短路径 Shortest Path</h2>
+<div id="outline-container-orge51b000" class="outline-2">
+<h2 id="orge51b000"><span class="section-number-2">4</span> 最短路径 Shortest Path</h2>
 <div class="outline-text-2" id="text-4">
 <div class="org-src-container">
 <pre class="src src-clojure">
@@ -401,8 +401,8 @@ for the JavaScript code in this tag.
 </div>
 
 
-<div id="outline-container-orga9c312e" class="outline-2">
-<h2 id="orga9c312e"><span class="section-number-2">5</span> 三重排序 Three-way string quicksort</h2>
+<div id="outline-container-org307b91d" class="outline-2">
+<h2 id="org307b91d"><span class="section-number-2">5</span> 三重排序 Three-way string quicksort</h2>
 <div class="outline-text-2" id="text-5">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn threeway-sort [strCol]
@@ -446,7 +446,51 @@ for the JavaScript code in this tag.
   (println))
 </pre>
 </div>
+</div>
+</div>
 
+
+<div id="outline-container-orgf209de8" class="outline-2">
+<h2 id="orgf209de8"><span class="section-number-2">6</span> KMP子字符串搜索 Knuth-Morris-Pratt substring search</h2>
+<div class="outline-text-2" id="text-6">
+<div class="org-src-container">
+<pre class="src src-clojure">(defn kmp_compile_pattern [pattern]
+  "Compile pattern to DFA."
+  (defn -charCodeAt [str pos]
+    (let [x (get str pos)]
+      (if (nil? x) -1 (int x)) ) )
+  (let [M (count pattern) R 256
+	restartAm (atom 0)
+	dfa (to-array-2d (repeat R (repeat M 0)))]
+    (aset dfa (-charCodeAt pattern 0) 0 1)
+
+    (doseq [j (range 1 M)]
+      ;; Copy mismatch cases
+      (doseq [c (range 0 R)]
+	(aset dfa c j (aget dfa c @restartAm)) )
+      ;; match case
+      (aset dfa (-charCodeAt pattern j) j (inc j))
+      ;; set restart position
+      (reset! restartAm (aget dfa (-charCodeAt pattern j) @restartAm)) )
+
+    dfa ) )
+
+(defn kmp_search [pattern dfa text]
+  (let [iAm (atom 0) jAm (atom 0) N (count text) M (count pattern)]
+    (while (and (&lt; @iAm N) (&lt; @jAm M))
+      (reset! jAm (aget dfa (-charCodeAt text @iAm) @jAm))
+      (swap! iAm inc) )
+    (if (= @jAm M)
+      (- @iAm M)
+      N ) ) )
+
+;; 测试
+;; (let [pattern "abc" dfa (compile_pattern pattern)]
+;;  (-&gt;
+;;   (kmp_search pattern dfa "efgabcxyz")
+;;   (println) ) )
+</pre>
+</div>
 
 
 <p>

@@ -190,5 +190,45 @@
 #+END_SRC
 
 
+* KMP子字符串搜索 Knuth-Morris-Pratt substring search
+
+#+BEGIN_SRC clojure
+(defn kmp_compile_pattern [pattern]
+  "Compile pattern to DFA."
+  (defn -charCodeAt [str pos]
+    (let [x (get str pos)]
+      (if (nil? x) -1 (int x)) ) )
+  (let [M (count pattern) R 256
+        restartAm (atom 0)
+        dfa (to-array-2d (repeat R (repeat M 0)))]
+    (aset dfa (-charCodeAt pattern 0) 0 1)
+
+    (doseq [j (range 1 M)]
+      ;; Copy mismatch cases
+      (doseq [c (range 0 R)]
+        (aset dfa c j (aget dfa c @restartAm)) )
+      ;; match case
+      (aset dfa (-charCodeAt pattern j) j (inc j))
+      ;; set restart position
+      (reset! restartAm (aget dfa (-charCodeAt pattern j) @restartAm)) )
+    
+    dfa ) )
+
+(defn kmp_search [pattern dfa text]
+  (let [iAm (atom 0) jAm (atom 0) N (count text) M (count pattern)]
+    (while (and (< @iAm N) (< @jAm M))
+      (reset! jAm (aget dfa (-charCodeAt text @iAm) @jAm))
+      (swap! iAm inc) )
+    (if (= @jAm M)
+      (- @iAm M)
+      N ) ) )
+
+;; 测试
+;; (let [pattern "abc" dfa (compile_pattern pattern)]
+;;  (->
+;;   (kmp_search pattern dfa "efgabcxyz")
+;;   (println) ) )
+#+END_SRC
+
 
 [[./index.html][回到首页]]
