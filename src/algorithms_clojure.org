@@ -231,4 +231,39 @@
 #+END_SRC
 
 
+* Boyer-Moore子字符串搜索 Boyer-Moore substring search
+
+#+BEGIN_SRC clojure
+(defn bm_compile_pattern [pattern]
+  (let [M (count pattern) R 256 right (int-array R)]
+    (doseq [c (range 0 R)]
+        (aset right c -1) )
+    (doseq [j (range 0 M)]
+      (aset right (-charCodeAt pattern j) j))
+    right ) )
+
+(defn bm_search [pattern right txt]
+  (let [N (count txt) M (count pattern)
+        skipAm (atom nil) iAm (atom 0) jAm (atom (dec M))
+        resultAm (atom nil)]
+    (while (and (<= @iAm (- N M)) (nil? @resultAm))
+      (reset! skipAm 0)
+
+      (let [breakLoopAm (atom false)]
+        (while (and (>= @jAm 0) (not @breakLoopAm))
+          (when (not= (-charCodeAt pattern @jAm) (-charCodeAt txt (+ @iAm @jAm)))
+            (reset! skipAm (- @jAm (aget right (-charCodeAt txt (+ @iAm @jAm)))))
+            (when (< @skipAm 1) (reset! skipAm 1))
+            (reset! breakLoopAm true))
+          (swap! jAm dec) )
+        (if (= @skipAm 0) (reset! resultAm @iAm))
+        )
+      
+      (swap! iAm #(+ %1 @skipAm)) )
+
+    ;; Return result
+    @resultAm ) )
+#+END_SRC
+
+
 [[./index.html][回到首页]]

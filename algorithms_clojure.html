@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-08-13 Fri 20:30 -->
+<!-- 2021-08-16 Mon 23:13 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>使用Clojure实现的一些算法</title>
@@ -246,8 +246,8 @@ for the JavaScript code in this tag.
 <a href="./index.html">回到首页</a>
 </p>
 
-<div id="outline-container-orge687fc1" class="outline-2">
-<h2 id="orge687fc1"><span class="section-number-2">1</span> 排序 Selection Sort</h2>
+<div id="outline-container-orga317387" class="outline-2">
+<h2 id="orga317387"><span class="section-number-2">1</span> 排序 Selection Sort</h2>
 <div class="outline-text-2" id="text-1">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn selection-sort [list1]
@@ -271,8 +271,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org61153e7" class="outline-2">
-<h2 id="org61153e7"><span class="section-number-2">2</span> 二分查找 Binary Search</h2>
+<div id="outline-container-orgd86cef4" class="outline-2">
+<h2 id="orgd86cef4"><span class="section-number-2">2</span> 二分查找 Binary Search</h2>
 <div class="outline-text-2" id="text-2">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn binary-search [coll item]
@@ -296,8 +296,8 @@ for the JavaScript code in this tag.
 </div>
 
 
-<div id="outline-container-org61634d8" class="outline-2">
-<h2 id="org61634d8"><span class="section-number-2">3</span> 红黑树相关 Red-Black Tree</h2>
+<div id="outline-container-org5e181df" class="outline-2">
+<h2 id="org5e181df"><span class="section-number-2">3</span> 红黑树相关 Red-Black Tree</h2>
 <div class="outline-text-2" id="text-3">
 <div class="org-src-container">
 <pre class="src src-clojure">(def RED true)
@@ -335,8 +335,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-orge51b000" class="outline-2">
-<h2 id="orge51b000"><span class="section-number-2">4</span> 最短路径 Shortest Path</h2>
+<div id="outline-container-org78fff64" class="outline-2">
+<h2 id="org78fff64"><span class="section-number-2">4</span> 最短路径 Shortest Path</h2>
 <div class="outline-text-2" id="text-4">
 <div class="org-src-container">
 <pre class="src src-clojure">
@@ -401,8 +401,8 @@ for the JavaScript code in this tag.
 </div>
 
 
-<div id="outline-container-org307b91d" class="outline-2">
-<h2 id="org307b91d"><span class="section-number-2">5</span> 三重排序 Three-way string quicksort</h2>
+<div id="outline-container-org0f1db54" class="outline-2">
+<h2 id="org0f1db54"><span class="section-number-2">5</span> 三重排序 Three-way string quicksort</h2>
 <div class="outline-text-2" id="text-5">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn threeway-sort [strCol]
@@ -450,8 +450,8 @@ for the JavaScript code in this tag.
 </div>
 
 
-<div id="outline-container-orgf209de8" class="outline-2">
-<h2 id="orgf209de8"><span class="section-number-2">6</span> KMP子字符串搜索 Knuth-Morris-Pratt substring search</h2>
+<div id="outline-container-org6b6167a" class="outline-2">
+<h2 id="org6b6167a"><span class="section-number-2">6</span> KMP子字符串搜索 Knuth-Morris-Pratt substring search</h2>
 <div class="outline-text-2" id="text-6">
 <div class="org-src-container">
 <pre class="src src-clojure">(defn kmp_compile_pattern [pattern]
@@ -489,6 +489,45 @@ for the JavaScript code in this tag.
 ;;  (-&gt;
 ;;   (kmp_search pattern dfa "efgabcxyz")
 ;;   (println) ) )
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgb8ffcf3" class="outline-2">
+<h2 id="orgb8ffcf3"><span class="section-number-2">7</span> Boyer-Moore子字符串搜索 Boyer-Moore substring search</h2>
+<div class="outline-text-2" id="text-7">
+<div class="org-src-container">
+<pre class="src src-clojure">(defn bm_compile_pattern [pattern]
+  (let [M (count pattern) R 256 right (int-array R)]
+    (doseq [c (range 0 R)]
+	(aset right c -1) )
+    (doseq [j (range 0 M)]
+      (aset right (-charCodeAt pattern j) j))
+    right ) )
+
+(defn bm_search [pattern right txt]
+  (let [N (count txt) M (count pattern)
+	skipAm (atom nil) iAm (atom 0) jAm (atom (dec M))
+	resultAm (atom nil)]
+    (while (and (&lt;= @iAm (- N M)) (nil? @resultAm))
+      (reset! skipAm 0)
+
+      (let [breakLoopAm (atom false)]
+	(while (and (&gt;= @jAm 0) (not @breakLoopAm))
+	  (when (not= (-charCodeAt pattern @jAm) (-charCodeAt txt (+ @iAm @jAm)))
+	    (reset! skipAm (- @jAm (aget right (-charCodeAt txt (+ @iAm @jAm)))))
+	    (when (&lt; @skipAm 1) (reset! skipAm 1))
+	    (reset! breakLoopAm true))
+	  (swap! jAm dec) )
+	(if (= @skipAm 0) (reset! resultAm @iAm))
+	)
+
+      (swap! iAm #(+ %1 @skipAm)) )
+
+    ;; Return result
+    @resultAm ) )
 </pre>
 </div>
 
