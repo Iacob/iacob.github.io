@@ -1,0 +1,26 @@
+
+#+TITLE: Lisp中实现C风格的for循环
+#+STARTUP: showeverything
+#+OPTIONS: toc:nil
+#+AUTHOR:
+
+[[./index.html][回到首页]]
+
+由于C语言风格的for循环使用得非常普遍，业务逻辑在设计时通常会向其靠拢，移植旧代码时更是经常遇到，但lisp中并没有类似的语句，所以在实现某些逻辑时会遇到不小的困难。不过没有类似的语句不代表此种逻辑完全不能实现，在lisp中可以将let、while和progn组合使用以达成相同的效果。
+
+实现此逻辑的Lisp代码
+#+BEGIN_SRC emacs-lisp
+(let ((i nil))
+  (while (progn (setq i (if (not i) 0 (1+ i) )) ;; 如果i为nil则初始化为0，否则加1
+		(< i 10))                       ;; 在i大於或等於10时结束循环
+    (... body ...) ) )                          ;; 循环执行的逻辑
+#+END_SRC
+
+效果等同於C代码
+#+BEGIN_SRC C
+for (int i = 0; i < 10; i++) {
+  // body
+}
+#+END_SRC
+
+[[./index.html][回到首页]]

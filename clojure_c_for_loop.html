@@ -3,10 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-08-25 Wed 00:55 -->
+<!-- 2021-08-25 Wed 00:53 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Iacob的网志</title>
+<title>Lisp中实现C风格的for循环</title>
 <meta name="generator" content="Org mode" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
@@ -241,16 +241,38 @@ for the JavaScript code in this tag.
 </head>
 <body>
 <div id="content">
-<h1 class="title">Iacob的网志</h1>
-<ul class="org-ul">
-<li><a href="./clojure.html">在Linux上为emacs安装clojure开发环境</a></li>
-<li><a href="./cqrs.html">CQRS的实现</a></li>
-<li><a href="./algorithms_clojure.html">使用Clojure实现的一些算法</a></li>
-<li><a href="./clojure_c_for_loop.html">Lisp中实现C风格的for循环</a></li>
-</ul>
+<h1 class="title">Lisp中实现C风格的for循环</h1>
+<p>
+<a href="./index.html">回到首页</a>
+</p>
 
 <p>
-<a href="https://github.com/Iacob">Github</a> <a href="./rss.xml">RSS</a>
+由于C语言风格的for循环使用得非常普遍，业务逻辑在设计时通常会向其靠拢，移植旧代码时更是经常遇到，但lisp中并没有类似的语句，所以在实现某些逻辑时会遇到不小的困难。不过没有类似的语句不代表此种逻辑完全不能实现，在lisp中可以将let、while和progn组合使用以达成相同的效果。
+</p>
+
+<p>
+实现此逻辑的Lisp代码
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(let ((i nil))
+  (while (progn (setq i (if (not i) 0 (1+ i) )) ;; 如果i为nil则初始化为0，否则加1
+		(&lt; i 10))                       ;; 在i大於或等於10时结束循环
+    (... body ...) ) )                          ;; 循环执行的逻辑
+</pre>
+</div>
+
+<p>
+效果等同於C代码
+</p>
+<div class="org-src-container">
+<pre class="src src-C">for (int i = 0; i &lt; 10; i++) {
+  // body
+}
+</pre>
+</div>
+
+<p>
+<a href="./index.html">回到首页</a>
 </p>
 </div>
 </body>

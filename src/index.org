@@ -7,5 +7,6 @@
  - [[./clojure.html][在Linux上为emacs安装clojure开发环境]]
  - [[./cqrs.html][CQRS的实现]]
  - [[./algorithms_clojure.html][使用Clojure实现的一些算法]]
+ - [[./clojure_c_for_loop.html][Lisp中实现C风格的for循环]]
 
-[[https://github.com/Iacob][Github]] [[https://iacob.github.io/rss.xml][RSS]]
+[[https://github.com/Iacob][Github]] [[./rss.xml][RSS]]
