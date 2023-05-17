@@ -14,6 +14,12 @@
 
 (defvar iweblog-base-uri "https://iacob.github.io" "Base URI")
 
+;;      <div class="article-section">
+;; 	  <div class="article-title"><a href="https://iacob.github.io/clojure.html">在Linux上为emacs安装clojure开发环境</a></div>
+;; 	  <div class="article-post-time">2021-03-25</div>
+;; 	  <div class="article-body"><div class="article-body-content"></div></div>
+;; 	</div>
+
 (defun iweblog-convert-list-to-rss ()
   (let (posts-list-text
         posts-list
@@ -53,11 +59,45 @@
       (write-file "output/rss.xml" 't))))
 
 
+(defun iweblog-convert-list-to-index-html ()
+  "Convert post list to index.html"
+  (let (posts-list-text
+        posts-list
+        (posts-div "")
+        fn-htmlfile)
+
+    (setq fn-htmlfile (lambda (file)
+                        (concat (car (split-string file "\\.")) "." "html")))
+
+    (with-temp-buffer
+      (insert-file-contents "list.yml")
+      (setq posts-list-text
+            (buffer-substring-no-properties (point-min) (point-max)))
+      (setq posts-list (yaml-parse-string posts-list-text)))
+    
+    (dolist (post (seq-into posts-list 'list))
+      (setq posts-div (concat posts-div
+                              (format "<div class=\"article-section\">
+  <div class=\"article-title\"><a href=\"%s\">%s</a></div>
+  <div class=\"article-post-time\">%s</div>
+  <div class=\"article-body\"><div class=\"article-body-content\"></div></div>
+</div>\n"
+                                      (funcall fn-htmlfile (gethash 'file post))
+                                      (gethash 'title post)
+                                      (gethash 'time post)))))
+    
+    (with-temp-buffer
+      (insert-file-contents "index_template.html")
+      (replace-string "${POST_LIST}" posts-div)
+      (write-file "output/index.html" 't))))
+
+
 (defun iweblog-refresh ()
   (interactive)
   (when (not (file-directory-p "output"))
     (mkdir "output"))
-  (iweblog-convert-list-to-rss))
+  (iweblog-convert-list-to-rss)
+  (iweblog-convert-list-to-index-html))
 
 ;; (let (article-buffer)
 ;;   (save-window-excursion
