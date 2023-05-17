@@ -7,25 +7,25 @@
       <title>在Linux上为emacs安装clojure开发环境</title>
       <link>https://iacob.github.io/clojure.html</link>
       <pubDate>2021-03-25</pubDate>
-      <description></description>
+      <description/>
     </item>
     <item>
       <title>CQRS的实现</title>
       <link>https://iacob.github.io/cqrs.html</link>
       <pubDate>2021-04-05</pubDate>
-      <description></description>
+      <description/>
     </item>
     <item>
       <title>使用Clojure实现的一些算法</title>
       <link>https://iacob.github.io/algorithms_clojure.html</link>
       <pubDate>2021-07-24</pubDate>
-      <description></description>
+      <description/>
     </item>
     <item>
       <title>Lisp中实现C风格的for循环</title>
       <link>https://iacob.github.io/clojure_c_for_loop.html</link>
       <pubDate>2021-08-25</pubDate>
-      <description></description>
+      <description/>
     </item>
   </channel>
 </rss>
