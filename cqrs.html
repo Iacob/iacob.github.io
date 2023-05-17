@@ -3,13 +3,13 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-04-05 一 15:24 -->
+<!-- 2023-05-17 Wed 23:32 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>CQRS的实现</title>
-<meta name="generator" content="Org mode" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
   .title  { text-align: center;
              margin-bottom: .2em; }
   .subtitle { text-align: center;
@@ -30,8 +30,9 @@
   #postamble p, #preamble p { font-size: 90%; margin: .2em; }
   p.verse { margin-left: 3%; }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
     padding: 8pt;
     font-family: monospace;
     overflow: auto;
@@ -39,22 +40,22 @@
   }
   pre.src {
     position: relative;
-    overflow: visible;
-    padding-top: 1.2em;
+    overflow: auto;
   }
   pre.src:before {
     display: none;
     position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
+    top: -8px;
+    right: 12px;
     padding: 3px;
-    border: 1px solid black;
+    color: #555;
+    background-color: #f2f2f299;
   }
-  pre.src:hover:before { display: inline;}
+  pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
   pre.src-C:before { content: 'C'; }
   /* pre.src-C++ doesn't work in CSS */
   pre.src-clojure:before { content: 'Clojure'; }
@@ -189,65 +190,18 @@
     { font-size: 10px; font-weight: bold; white-space: nowrap; }
   .org-info-js_search-highlight
     { background-color: #ffff00; color: #000000; font-weight: bold; }
-  .org-svg { width: 90%; }
-  /*]]>*/-->
+  .org-svg { }
 </style>
-<script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-
-Copyright (C) 2012-2020 Free Software Foundation, Inc.
-
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
-
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
-
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
-<!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
-</script>
 </head>
 <body>
-<div id="content">
+<div id="content" class="content">
 <h1 class="title">CQRS的实现</h1>
 <p>
 <a href="./index.html">回到首页</a>
 </p>
 
-<div id="outline-container-orga0865b8" class="outline-2">
-<h2 id="orga0865b8"><span class="section-number-2">1</span> 起因</h2>
+<div id="outline-container-org3478778" class="outline-2">
+<h2 id="org3478778"><span class="section-number-2">1.</span> 起因</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 许多情况下，在某个系统中读操作的次数是远大于写操作的，例如电商网站，对商品信息的读取次数远大于在网站上建立订单的次数，这时通常会将读操作与写操作分开处理，这么做的目的是
@@ -259,8 +213,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org39d1ae1" class="outline-2">
-<h2 id="org39d1ae1"><span class="section-number-2">2</span> 结构</h2>
+<div id="outline-container-org9afa6a3" class="outline-2">
+<h2 id="org9afa6a3"><span class="section-number-2">2.</span> 结构</h2>
 <div class="outline-text-2" id="text-2">
 <pre class="example">
 
@@ -285,8 +239,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org46ddb76" class="outline-2">
-<h2 id="org46ddb76"><span class="section-number-2">3</span> 各部分职责</h2>
+<div id="outline-container-orgebac630" class="outline-2">
+<h2 id="orgebac630"><span class="section-number-2">3.</span> 各部分职责</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 主控端: 消息分发，执行重要的写操作
@@ -298,8 +252,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-orgefa4f6b" class="outline-2">
-<h2 id="orgefa4f6b"><span class="section-number-2">4</span> 数据同步方式</h2>
+<div id="outline-container-org89f4ec3" class="outline-2">
+<h2 id="org89f4ec3"><span class="section-number-2">4.</span> 数据同步方式</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 数据在主控端和各个节点之间通常通过“声明与确认”的方式传输，主控端将数据库变更广播出去，各个节点自行从主控端获取数据并保存
@@ -311,8 +265,8 @@ for the JavaScript code in this tag.
 </div>
 </div>
 
-<div id="outline-container-org5f0b1e1" class="outline-2">
-<h2 id="org5f0b1e1"><span class="section-number-2">5</span> 结论</h2>
+<div id="outline-container-org6a9464a" class="outline-2">
+<h2 id="org6a9464a"><span class="section-number-2">5.</span> 结论</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 CQRS是一种利用有限的资源和预算实现高负载系统的方式，且不会和组建集群一样需要大量的商业软件，定制的余地较大。

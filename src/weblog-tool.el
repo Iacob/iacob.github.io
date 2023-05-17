@@ -92,10 +92,39 @@
       (write-file "output/index.html" 't))))
 
 
+
+(defun iweblog-compile-posts-in-list ()
+  "Compile listed posts."
+  (let (posts-list-text
+        posts-list
+        fn-htmlfile)
+    
+    (setq fn-htmlfile (lambda (file)
+                        (concat (car (split-string file "\\.")) "." "html")))
+    
+    (with-temp-buffer
+      (insert-file-contents "list.yml")
+      (setq posts-list-text
+            (buffer-substring-no-properties (point-min) (point-max)))
+      (setq posts-list (yaml-parse-string posts-list-text)))
+    
+    (dolist (post (seq-into posts-list 'list))
+      (let (article-buffer (post-file (gethash 'file post)))
+        (save-window-excursion
+          (setq article-buffer (find-file post-file))
+          (setq org-html-postamble nil)
+          (org-html-export-as-html)
+          (switch-to-buffer "*Org HTML Export*")
+          (write-file (concat "output/" (funcall fn-htmlfile post-file)) 't)
+          (kill-buffer)
+          (kill-buffer article-buffer))))))
+
+
 (defun iweblog-refresh ()
   (interactive)
   (when (not (file-directory-p "output"))
     (mkdir "output"))
+  (iweblog-compile-posts-in-list)
   (iweblog-convert-list-to-rss)
   (iweblog-convert-list-to-index-html))
 
